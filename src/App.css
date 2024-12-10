@@ -1,0 +1,62 @@
+#root {
+  text-align: center;
+  width: 100%;
+  
+}
+
+.maintwitter::after{
+  content:'';
+  background-image:url("./assets/X.svg");
+  background-position:center;
+  background-size:cover;
+  height:20px;
+  width:20px;
+  right:5px;
+  margin-top:3px;
+  position:absolute;
+}
+
+.github::before{
+  content:'';
+  background-image:url("./assets/github.svg");
+  background-position:center;
+  background-size:cover;
+  height:25px;
+  width:25px;
+  left:20px;
+  margin-top:1px;
+  position:absolute;
+}
+
+.socials{
+  color:transparent;
+  min-width: 30px;
+}
+
+@keyframes col1 {
+	0% {fill:rgba(var(--pitti-color),1)}
+	20% {fill:rgba(var(--pitti-color),0.5)}
+	40% {fill:rgba(var(--pitti-color),0)}
+	60% {fill:rgba(var(--pitti-color),0)}
+	80% {fill:rgba(var(--pitti-color),0.5)}
+	100% {fill:rgba(var(--pitti-color),1)}
+}
+
+
+@keyframes col2 {
+	0% {fill:rgba(var(--pitti-color),0.5)}
+	20% {fill:rgba(var(--pitti-color),1)}
+	40% {fill:rgba(var(--pitti-color),0.5)}
+	60% {fill:rgba(var(--pitti-color),0)}
+	80% {fill:rgba(var(--pitti-color),0)}
+	100% {fill:rgba(var(--pitti-color),0.5)}
+}
+
+@keyframes col3 {
+	0% {fill:rgba(var(--pitti-color),0)}
+	20% {fill:rgba(var(--pitti-color),0.5)}
+	40% {fill:rgba(var(--pitti-color),1)}
+	60% {fill:rgba(var(--pitti-color),0.5)}
+	80% {fill:rgba(var(--pitti-color),0)}
+	100% {fill:rgba(var(--pitti-color),0)}
+}
