@@ -17,7 +17,7 @@ function App() {
   const [disabled, setDisabled] = useState(true); //disable button until model is loaded
   const [semanticWeight, setSemanticWeight] = useState<number>(0.7); //default value
   const [inputText, setInputText] = useState<string>(""); //can't be null
-  const [output, setOutput] = useState<string>(""); //output from the model
+  const [output, setOutput] = useState<string[]>([""]); //output from the model
   const [chunks, setChunks] = useState<Chunk[]>([]); //Retrieved chunks
   const [selectedChunk, setSelectedChunk] = useState<number| null>(null);//index of the selected output
   const [selectionFocus, setSelectionFocus] = useState<boolean>(false); // to allow arrow key navigation
@@ -134,14 +134,30 @@ function App() {
           break;
 
         case 'streaming':
-          setOutput(prev=>prev+e.data.stream);
+          setProcessing(false);
+          const stream = e.data.stream;
+  
+          if (stream.includes("<|source_analysis_end|>")) {
+            const [before, after] = stream.split("<|source_analysis_end|>");
+            setOutput(prev => [
+              ...prev.slice(0, -1), 
+              prev[prev.length-1] + before,
+              after || ""
+            ]);
+          } else {
+            const cleanStream = stream
+              .replace("<|answer_start|>", "")
+              .replace("<|answer_end|>", "")
+              .replace("<|end_of_text|>", "");
+            setOutput(prev => [...prev.slice(0, -1), prev[prev.length-1] + cleanStream]);
+          }
           break;
 
         case 'complete':
           // Generation complete: re-enable the "Generate" button
           setDisabled(false);
           setProcessing(false);
-          setOutput(e.data.payload.answer);
+          // setOutput(e.data.payload.answer); // to prevent the removing of the tags (which are used in streaming above)
           break;
       }
     };
@@ -210,18 +226,31 @@ function App() {
             <button className="text-white font-bold py-2 px-4 rounded" onClick={handleClick} disabled={disabled}>{disabled?"Patientez":"Générer"}</button> 
           </div>
           
-          {!output && <Loader/> }
-          {(output.length>0 ) && 
-            <div className={`relative w-full flex flex-wrap justify-start min-[600px]:flex-nowrap gap-3 mt-10`}>
-              <div className="min-w-[300px] grow">
+          {processing && <Loader/> }
+          {output[0] && 
+            <div className={`relative w-full flex flex-col justify-start min-[750px]:flex-row gap-3 mt-10`}>
+              <div className="w-full min-[750px]:w-2/3">
                 <div className={`w-full px-6`}>
-                    <div className="w-full text-start">Résultat</div>
-                    <div className="w-full text-start mt-4">{output}</div>
+                    <div className="w-full text-start text-xl font-bold mb-4">Résultat</div>
+                    <div className="w-full text-start ">
+                      {output[0] &&
+                        <div className="w-full">
+                          <div className="w-full text-start text-start text-xl mb-4">Analyse</div>
+                          <div className="w-full text-start mb-4">{output[0]}</div>
+                        </div>
+                      }
+                      {output[1] &&
+                        <div className="w-full">
+                          <div className="w-full text-start text-start text-xl mb-4">Réponse</div>
+                          <div className="w-full text-start mb-4">{output[1]}</div>
+                        </div>
+                      }
+                    </div>
                 </div>
               </div>
-              <div className={`flex w-full flex-col h-full min-[600px]:w-[250px] min-[600px]:shrink-0`}>
+              <div className={`w-full min-[750px]:w-1/3 flex-col h-full`}>
                 <div className="w-full flex flex-nowrap mb-2 justify-between">
-                  <div className="text-start">Sources</div>
+                  <div className="text-start text-xl font-bold mb-4">Sources</div>
                 </div>
                 <div 
                   className="border-2 border-gray-300 rounded-lg overflow-hidden" 
@@ -243,19 +272,8 @@ function App() {
                       />
                     )} 
                 </div>
-                <div className="w-full flex grow"></div>
               </div>
-              
           </div>}
-          <div className="mt-10 text-sm italic">
-            <p className="w-full text-start py-1">TODO</p>
-            <p className="w-full text-start py-1">
-              This AI-powered classification assistant performs semantic search comparing your company description to all sectors (level 4) in the chosen classification and orders them by similarity scores. What matters is the relative order of the scores rather than the absolute values. This tool can narrow down the options but should not be trusted to identify the correct answer.
-            </p>
-            <p className="w-full text-start py-1">
-              More powerful and/or finetuned models would be necessary to completely replace humans at this task. To allow inference on your device, we focused on smaller models. <a href="https://huggingface.co/Xenova/bge-small-en-v1.5">Bge-small-en-v1.5</a> is downloaded by default. We kept the option to use another model, <a href="https://huggingface.co/Xenova/all-MiniLM-L6-v2">all-MiniLM-L6-v2</a>, which may yield better results based on our tests. This app was built as a demo to illustrate real-life use cases of AI, working exclusively with basic building blocks in order to demystify this technology. Read about other solutions we tested to classify companies <a href="https://www.pitti.io/blogs/ELIAAM/sector-classification">here</a>.
-            </p>
-          </div>
         </div>}
       <Footer/>
     </div>

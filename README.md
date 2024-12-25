@@ -13,6 +13,8 @@ Most models should work out of the box but you can set inference parameters in s
 Webgpu support for the LLM still requires some work
 
 ## UI
+This app is a Vite app (React).  
+
 The code and the comments in the code are in English but the UI is un French because the dataset used for the RAG test was in French. So for the non-French speakers: the page that is displayed when the app starts is a warning to give the user an opportunity to NOT download 3GB of model weights. Download only starts after this page.  
 
 Still a lot of work left on the UI. Without GPU support, performance is probably not good enough to justify spending time on UI/UX details. 

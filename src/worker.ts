@@ -80,7 +80,12 @@ class RAGWorker {
             }));
     }
   
-    async init(progress_callback : (progress : ProgressCallbackInfo) => void , embedding:string, generation:string, dataUrl : string): Promise<void> {
+    async init(
+        progress_callback : (progress : ProgressCallbackInfo) => void , 
+        embedding:string, 
+        generation:string, 
+        dataUrl : string
+    ): Promise<void> {
         try {
             // Load models
             progress_callback({ status: 'initiate', message: "Téléchargement du modèle d'embedding..."});
